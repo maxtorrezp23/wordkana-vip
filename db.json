@@ -1,0 +1,34 @@
+{
+  "users": [
+    {
+      "name": "123",
+      "phone": "+59177080900",
+      "password": "123123",
+      "createdAt": "2025-12-08T20:34:44.991Z",
+      "referralCode": "0900AB",
+      "referredBy": null,
+      "totalReferrals": 0,
+      "id": 1
+    },
+    {
+      "name": "123123",
+      "phone": "+59160000000",
+      "password": "123123",
+      "createdAt": "2025-12-08T20:43:01.722Z",
+      "referralCode": "0000CD",
+      "referredBy": null,
+      "totalReferrals": 0,
+      "id": 2
+    },
+    {
+      "name": "123123123",
+      "phone": "+59170000000",
+      "password": "123123",
+      "createdAt": "2025-12-08T22:06:29.829Z",
+      "referralCode": "0000EF",
+      "referredBy": null,
+      "totalReferrals": 0,
+      "id": 3
+    }
+  ]
+}

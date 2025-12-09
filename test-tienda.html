@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Tienda</title>
+    <style>
+        .product-card {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+        }
+        .product-image {
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test de Productos</h1>
+    <div id="productsGrid"></div>
+
+    <script>
+        console.log('=== INICIANDO TEST ===');
+        
+        // Simular usuario logueado
+        const testUser = {
+            name: 'Test User',
+            phone: '+59170000000'
+        };
+        localStorage.setItem('currentUser', JSON.stringify(testUser));
+        console.log('Usuario de prueba creado:', testUser);
+
+        // Productos de prueba
+        const products = [
+            { id: 1, name: 'Producto 1', price: 50, image: 'https://via.placeholder.com/200', purchased: false },
+            { id: 2, name: 'Producto 2', price: 75, image: 'https://via.placeholder.com/200', purchased: false },
+            { id: 3, name: 'Producto 3', price: 100, image: 'https://via.placeholder.com/200', purchased: false }
+        ];
+        console.log('Productos de prueba:', products);
+
+        // Renderizar productos
+        const productsGrid = document.getElementById('productsGrid');
+        console.log('Elemento productsGrid:', productsGrid);
+
+        products.forEach(product => {
+            console.log('Creando card para:', product.name);
+            const productCard = document.createElement('div');
+            productCard.className = 'product-card';
+            productCard.innerHTML = `
+                <img src="${product.image}" alt="${product.name}" class="product-image">
+                <div>${product.name}</div>
+                <div>${product.price} Bs</div>
+                <button>Comprar</button>
+            `;
+            productsGrid.appendChild(productCard);
+        });
+
+        console.log('=== RENDERIZADO COMPLETO ===');
+    </script>
+</body>
+</html>

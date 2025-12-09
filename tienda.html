@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mercado Libre - Wordkana</title>
+    <link rel="stylesheet" href="tienda.css">
+    <script src="translations.js"></script>
+</head>
+<body>
+    <!-- Selector de Idiomas -->
+    <div class="language-selector-store">
+        <button class="lang-toggle" id="langToggle">
+            <span class="current-flag" id="currentFlag">🇪🇸</span>
+            <span class="current-lang" id="currentLang">ES</span>
+            <span class="arrow">▼</span>
+        </button>
+        <div class="lang-dropdown" id="langDropdown">
+            <button class="lang-option" data-lang="es" title="Español">
+                <span class="flag">🇪🇸</span>
+                <span class="lang-name">Español</span>
+            </button>
+            <button class="lang-option" data-lang="en" title="English">
+                <span class="flag">🇺🇸</span>
+                <span class="lang-name">English</span>
+            </button>
+            <button class="lang-option" data-lang="zh" title="中文">
+                <span class="flag">🇨🇳</span>
+                <span class="lang-name">中文</span>
+            </button>
+            <button class="lang-option" data-lang="pt" title="Português">
+                <span class="flag">🇧🇷</span>
+                <span class="lang-name">Português</span>
+            </button>
+            <button class="lang-option" data-lang="ru" title="Русский">
+                <span class="flag">🇷🇺</span>
+                <span class="lang-name">Русский</span>
+            </button>
+            <button class="lang-option" data-lang="it" title="Italiano">
+                <span class="flag">🇮🇹</span>
+                <span class="lang-name">Italiano</span>
+            </button>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/6.6.73/mercadolibre/logo_large_25years_v2.png" alt="Mercado Libre" class="ml-logo">
+            </div>
+            <div class="user-info">
+                <span class="welcome-text"><span data-translate="welcomePrefix">Bienvenido</span>, <strong id="userName"></strong></span>
+                <div class="balance">
+                    <span class="balance-label" data-translate="balance">Saldo:</span>
+                    <span class="balance-amount" id="userBalance">100 Bs</span>
+                </div>
+                <div class="earnings">
+                    <span class="earnings-label">💰 <span data-translate="earnings">Ganancias</span>:</span>
+                    <span class="earnings-amount" id="userEarnings">0 Bs</span>
+                </div>
+                <div class="referral-info">
+                    <button class="btn-referral" id="referralBtn">🎁 <span data-translate="referrals">Referidos</span></button>
+                </div>
+                <button class="btn-withdraw" id="withdrawBtn">💸 <span data-translate="withdraw">Retirar Ganancias</span></button>
+                <button class="btn-support" id="supportBtn">❓ <span data-translate="support">Soporte</span></button>
+                <button class="btn-recharge" id="rechargeBtn">💳 <span data-translate="recharge">Recargar Saldo</span></button>
+                <button class="btn-logout" id="logoutBtn" data-translate="logout">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="level-section">
+            <div class="level-info">
+                <h2>👑 VIP <span id="currentLevel">1</span></h2>
+                <div class="level-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">0/20 productos comprados</p>
+                </div>
+            </div>
+            <div class="level-rewards">
+                <p>💎 Ganancias por compra: <strong>120%</strong></p>
+            </div>
+        </div>
+
+        <div class="products-section">
+            <div class="ml-banner">
+                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1200&h=400&fit=crop" alt="Mercado Libre Banner" class="banner-image" onerror="this.src='https://via.placeholder.com/1200x400/FFE600/000000?text=Wordkana+VIP+Store'">
+            </div>
+            <h2>Productos Exclusivos - VIP <span id="levelTitle">1</span></h2>
+            <div class="products-grid" id="productsGrid">
+                <!-- Los productos se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Soporte -->
+    <div id="supportModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="close-modal" id="closeSupportModal">&times;</span>
+            <div class="support-header">
+                <h2>❓ Soporte Técnico - Preguntas Frecuentes</h2>
+                <p>Encuentra respuestas a las preguntas más comunes</p>
+            </div>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Cómo funciona el sistema de VIP?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        El sistema tiene 10 niveles VIP. Cada VIP tiene 20 productos exclusivos. Al comprar los 20 productos de un VIP, subes automáticamente al siguiente nivel con nuevos productos.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Cómo gano dinero comprando productos?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Por cada compra que realices, recibes un 120% de ganancia. Por ejemplo, si compras un producto de 100 Bs, recibirás 120 Bs en tu cuenta de ganancias.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Cómo recargo saldo a mi cuenta?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Haz clic en el botón "💳 Recargar Saldo", ingresa el monto que deseas recargar y confirma. Se abrirá WhatsApp automáticamente para contactar con soporte y procesar tu recarga.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Cuánto tarda en acreditarse mi recarga?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Las recargas se procesan manualmente por un administrador. Una vez confirmado tu pago por WhatsApp, tu saldo será acreditado en un máximo de 30 minutos.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Puedo retirar mis ganancias?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Sí, el administrador puede retirar tus ganancias acumuladas. Contacta por WhatsApp para solicitar un retiro. El monto se transferirá a tu cuenta bancaria o método de pago preferido.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Qué pasa si no tengo saldo suficiente?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Si intentas comprar un producto sin saldo suficiente, recibirás un mensaje de error. Necesitas recargar saldo antes de poder continuar comprando.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Se pierden mis ganancias al subir de VIP?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        No, tus ganancias se acumulan y nunca se pierden. Solo se resetean los productos comprados al subir de nivel, pero tu saldo y ganancias permanecen intactos.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Puedo comprar productos en cualquier orden?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Sí, puedes comprar los 20 productos de cada VIP en el orden que prefieras. No es necesario seguir un orden específico.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Hay un límite máximo de VIP?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        El sistema tiene 10 niveles VIP. Al completar el VIP 10, habrás terminado todos los niveles disponibles. Podrás seguir acumulando ganancias y retirándolas.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Necesito ayuda adicional?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Si tienes más preguntas, contáctanos por WhatsApp al +591 75605713. Nuestro equipo de soporte está disponible para ayudarte.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Recarga -->
+    <div id="rechargeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeRechargeModal">&times;</span>
+            <h2>💳 Recargar Saldo</h2>
+            <p>Ingresa el monto que deseas recargar</p>
+            <div class="input-group">
+                <span class="currency-symbol">Bs</span>
+                <input type="number" id="rechargeAmount" placeholder="0.00" min="1" step="0.01">
+            </div>
+            <div class="quick-amounts">
+                <button class="quick-btn" data-amount="50">50 Bs</button>
+                <button class="quick-btn" data-amount="100">100 Bs</button>
+                <button class="quick-btn" data-amount="200">200 Bs</button>
+                <button class="quick-btn" data-amount="500">500 Bs</button>
+            </div>
+            <button class="btn-confirm-recharge" id="confirmRechargeBtn">
+                <span>📱 Enviar por WhatsApp</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Nivel Completado -->
+    <div id="levelUpModal" class="modal">
+        <div class="modal-content levelup-modal-content">
+            <div class="levelup-header">
+                <div class="confetti">🎉</div>
+                <h2>¡Felicitaciones!</h2>
+                <div class="confetti">🎊</div>
+            </div>
+            <div class="levelup-body">
+                <div class="level-badge">
+                    <span class="level-number" id="newLevelNumber">VIP 2</span>
+                </div>
+                <p class="levelup-message">¡Has completado el nivel anterior y subiste de categoría!</p>
+                <div class="earnings-reminder">
+                    <div class="earnings-icon">💰</div>
+                    <div class="earnings-info">
+                        <h3>Tus Ganancias Disponibles</h3>
+                        <p class="earnings-amount-large" id="modalEarningsAmount">0 Bs</p>
+                        <p class="earnings-hint">¡No olvides retirar tus ganancias!</p>
+                    </div>
+                </div>
+                <div class="levelup-actions">
+                    <button class="btn-withdraw-now" id="withdrawNowBtn">
+                        <span>💸 Retirar Ahora</span>
+                    </button>
+                    <button class="btn-continue-shopping" id="continueShoppingBtn">
+                        <span>🛍️ Continuar Comprando</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Descripción del Producto -->
+    <div id="productModal" class="modal">
+        <div class="modal-content product-modal-content">
+            <span class="close-modal" id="closeProductModal">&times;</span>
+            <div class="product-modal-image">
+                <img id="modalProductImage" src="" alt="Producto">
+            </div>
+            <div class="product-modal-info">
+                <h2 id="modalProductName"></h2>
+                <p class="product-modal-description" id="modalProductDescription"></p>
+                
+                <div class="product-modal-details">
+                    <div class="detail-row">
+                        <span class="detail-label">💰 Precio del producto:</span>
+                        <span class="detail-value" id="modalProductPrice"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">💳 Tu saldo actual:</span>
+                        <span class="detail-value" id="modalUserBalance"></span>
+                    </div>
+                    <div class="detail-row earnings-row">
+                        <span class="detail-label">🎁 Ganancia (120%):</span>
+                        <span class="detail-value" id="modalProductEarnings"></span>
+                    </div>
+                    <div class="detail-row insufficient-row" id="insufficientRow" style="display: none;">
+                        <span class="detail-label">⚠️ Saldo faltante:</span>
+                        <span class="detail-value insufficient-value" id="modalInsufficientAmount"></span>
+                    </div>
+                </div>
+                
+                <div class="product-modal-actions">
+                    <button class="btn-buy-now" id="confirmBuyBtn">
+                        <span>🛒 Comprar Ahora</span>
+                    </button>
+                    <button class="btn-recharge-from-modal" id="rechargeFromModalBtn" style="display: none;">
+                        <span>💳 Recargar Saldo</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Referidos -->
+    <div id="referralModal" class="modal">
+        <div class="modal-content modal-referral">
+            <span class="close-modal" id="closeReferralModal">&times;</span>
+            <div class="referral-header">
+                <h2>🎁 Sistema de Referidos</h2>
+                <p>Invita amigos y gana bonos por cada referido</p>
+            </div>
+            
+            <div class="referral-code-section">
+                <h3>Tu Código de Referido</h3>
+                <div class="code-display">
+                    <span class="code-text" id="userReferralCode">------</span>
+                    <button class="btn-copy-code" id="copyCodeBtn">📋 Copiar</button>
+                </div>
+                <p class="code-hint">Comparte este código con tus amigos al registrarse</p>
+            </div>
+
+            <div class="referral-stats">
+                <div class="stat-box">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Referidos Totales</span>
+                        <span class="stat-value" id="totalReferrals">0</span>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Ganancias por Referidos</span>
+                        <span class="stat-value" id="referralEarnings">0 Bs</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="referral-benefits">
+                <h3>Beneficios del Sistema</h3>
+                <ul class="benefits-list">
+                    <li>
+                        <span class="benefit-icon">🎉</span>
+                        <span class="benefit-text">Recibe <strong>10 Bs</strong> por cada amigo que se registre con tu código</span>
+                    </li>
+                    <li>
+                        <span class="benefit-icon">🎁</span>
+                        <span class="benefit-text">Tu amigo recibe <strong>5 Bs</strong> de bono de bienvenida</span>
+                    </li>
+                    <li>
+                        <span class="benefit-icon">♾️</span>
+                        <span class="benefit-text">Sin límite de referidos - ¡invita a todos tus amigos!</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="tienda.js"></script>
+</body>
+</html>

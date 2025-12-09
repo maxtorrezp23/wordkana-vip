@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Wordkana</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js"></script>
+    <script src="translations.js"></script>
+</head>
+<body>
+    <!-- Selector de Idiomas -->
+    <div class="language-selector">
+        <button class="lang-toggle" id="langToggle">
+            <span class="current-flag" id="currentFlag">🇪🇸</span>
+            <span class="current-lang" id="currentLang">ES</span>
+            <span class="arrow">▼</span>
+        </button>
+        <div class="lang-dropdown" id="langDropdown">
+            <button class="lang-option" data-lang="es" title="Español">
+                <span class="flag">🇪🇸</span>
+                <span class="lang-name">Español</span>
+            </button>
+            <button class="lang-option" data-lang="en" title="English">
+                <span class="flag">🇺🇸</span>
+                <span class="lang-name">English</span>
+            </button>
+            <button class="lang-option" data-lang="zh" title="中文">
+                <span class="flag">🇨🇳</span>
+                <span class="lang-name">中文</span>
+            </button>
+            <button class="lang-option" data-lang="pt" title="Português">
+                <span class="flag">🇧🇷</span>
+                <span class="lang-name">Português</span>
+            </button>
+            <button class="lang-option" data-lang="ru" title="Русский">
+                <span class="flag">🇷🇺</span>
+                <span class="lang-name">Русский</span>
+            </button>
+            <button class="lang-option" data-lang="it" title="Italiano">
+                <span class="flag">🇮🇹</span>
+                <span class="lang-name">Italiano</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="login-box">
+            <h1 class="app-title">Wordkana</h1>
+            <h2 id="formTitle" data-translate="loginTitle">Iniciar Sesión</h2>
+            
+            <!-- Formulario de Login -->
+            <form id="loginForm" class="form-active">
+                <div class="input-group">
+                    <label for="loginPhone" data-translate="phone">Número de Teléfono</label>
+                    <div class="phone-input-wrapper">
+                        <span class="phone-prefix">+591</span>
+                        <input type="tel" id="loginPhone" name="loginPhone" placeholder="71234567" required>
+                    </div>
+                    <span class="error-message" id="loginPhoneError"></span>
+                </div>
+                
+                <div class="input-group">
+                    <label for="loginPassword" data-translate="password">Contraseña</label>
+                    <input type="password" id="loginPassword" name="loginPassword" placeholder="••••••••" required>
+                    <span class="error-message" id="loginPasswordError"></span>
+                </div>
+                
+                <div class="options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember" data-translate="rememberMe">Recordarme</label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-login" data-translate="loginButton">Iniciar Sesión</button>
+                
+                <div class="register-link">
+                    <span data-translate="noAccount">¿No tienes cuenta?</span> <a href="#" id="showRegister" data-translate="registerHere">Regístrate aquí</a>
+                </div>
+            </form>
+            
+            <!-- Formulario de Registro -->
+            <form id="registerForm" class="form-hidden">
+                <div class="input-group">
+                    <label for="registerName" data-translate="name">Nombre Completo</label>
+                    <input type="text" id="registerName" name="registerName" placeholder="Juan Pérez" required>
+                    <span class="error-message" id="registerNameError"></span>
+                </div>
+                
+                <div class="input-group">
+                    <label for="registerPhone" data-translate="phone">Número de Teléfono Boliviano</label>
+                    <div class="phone-input-wrapper">
+                        <span class="phone-prefix">+591</span>
+                        <input type="tel" id="registerPhone" name="registerPhone" placeholder="71234567" required>
+                    </div>
+                    <span class="error-message" id="registerPhoneError"></span>
+                    <span class="help-text">Ingresa tu número sin el prefijo +591</span>
+                </div>
+                
+                <div class="input-group">
+                    <label for="registerPassword" data-translate="password">Contraseña</label>
+                    <input type="password" id="registerPassword" name="registerPassword" placeholder="••••••••" required>
+                    <span class="error-message" id="registerPasswordError"></span>
+                </div>
+                
+                <div class="input-group">
+                    <label for="confirmPassword" data-translate="confirmPassword">Confirmar Contraseña</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required>
+                    <span class="error-message" id="confirmPasswordError"></span>
+                </div>
+                
+                <div class="input-group">
+                    <label for="referralCode" data-translate="referralCode">Código de Referido (Opcional)</label>
+                    <input type="text" id="referralCode" name="referralCode" placeholder="Ingresa el código" maxlength="8">
+                    <span class="help-text" data-translate="referralHelp">Si alguien te invitó, ingresa su código aquí</span>
+                    <span class="error-message" id="referralCodeError"></span>
+                </div>
+                
+                <div class="terms-container">
+                    <label class="terms-checkbox">
+                        <input type="checkbox" id="acceptTerms" name="acceptTerms" required>
+                        <span><span data-translate="acceptTerms">He leído y acepto los</span> <a href="#" id="showTerms" class="terms-link" data-translate="termsLink">Términos y Condiciones</a></span>
+                    </label>
+                    <span class="error-message" id="termsError"></span>
+                </div>
+                
+                <button type="submit" class="btn-login" data-translate="createAccount">Crear Cuenta</button>
+                
+                <div class="register-link">
+                    <span data-translate="haveAccount">¿Ya tienes cuenta?</span> <a href="#" id="showLogin" data-translate="loginHere">Inicia sesión aquí</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal de Términos y Condiciones -->
+    <div id="termsModal" class="modal-overlay">
+        <div class="modal-content terms-modal">
+            <div class="modal-header">
+                <h2>📋 Términos y Condiciones</h2>
+                <button class="close-modal" id="closeTermsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="terms-content">
+                    <h3>1. ACEPTACIÓN DE LOS TÉRMINOS</h3>
+                    <p>Al acceder y utilizar Wordkana (en adelante "la Plataforma"), usted acepta expresamente estos Términos y Condiciones en su totalidad. Si no está de acuerdo con alguno de estos términos, debe abstenerse de utilizar la Plataforma.</p>
+                    
+                    <h3>2. DESCRIPCIÓN DEL SERVICIO</h3>
+                    <p>Wordkana es una plataforma de comercio electrónico virtual que permite a los usuarios registrados realizar compras de productos digitales organizados por niveles VIP. La plataforma opera con un sistema de saldo virtual y ganancias que se calculan automáticamente según las transacciones realizadas.</p>
+                    
+                    <h3>3. REGISTRO Y CUENTA DE USUARIO</h3>
+                    <p>Para utilizar la plataforma, debe registrarse proporcionando información veraz, completa y actualizada. Usted es responsable de mantener la confidencialidad de su contraseña y de todas las actividades que ocurran bajo su cuenta.</p>
+                    
+                    <h3>4. SISTEMA DE NIVELES VIP</h3>
+                    <p>La plataforma utiliza un sistema de niveles VIP que determina:</p>
+                    <ul>
+                        <li>Productos disponibles para compra</li>
+                        <li>Precios de los productos (pueden variar según el nivel)</li>
+                        <li>Requisitos para retiro de ganancias</li>
+                    </ul>
+                    <p>Nos reservamos el derecho de modificar las condiciones de cada nivel VIP sin previo aviso.</p>
+                    
+                    <h3>5. PRECIOS Y PRODUCTOS</h3>
+                    <p>Los precios de los productos pueden cambiar en cualquier momento. Los productos son digitales y no implican la entrega de bienes físicos. Las ganancias mostradas son valores calculados dentro del sistema.</p>
+                    
+                    <h3>6. DEPÓSITOS Y RETIROS</h3>
+                    <p>Los depósitos se procesan a través de métodos de pago especificados en la plataforma. Los retiros están sujetos a:</p>
+                    <ul>
+                        <li>Verificación de identidad</li>
+                        <li>Cumplimiento de requisitos por nivel VIP</li>
+                        <li>Disponibilidad de fondos</li>
+                        <li>Procesamiento manual por parte del administrador</li>
+                    </ul>
+                    
+                    <h3>7. PROHIBICIONES</h3>
+                    <p>Está estrictamente prohibido:</p>
+                    <ul>
+                        <li>Crear múltiples cuentas</li>
+                        <li>Manipular el sistema o intentar fraude</li>
+                        <li>Compartir credenciales de acceso</li>
+                        <li>Utilizar la plataforma para actividades ilegales</li>
+                        <li>Realizar ingeniería inversa del código</li>
+                    </ul>
+                    
+                    <h3>8. SUSPENSIÓN Y CANCELACIÓN</h3>
+                    <p>Nos reservamos el derecho de suspender o cancelar cualquier cuenta si detectamos violación de estos términos, actividad sospechosa o uso indebido de la plataforma.</p>
+                    
+                    <h3>9. PROPIEDAD INTELECTUAL</h3>
+                    <p>Todo el contenido de la plataforma, incluyendo diseño, código, logos y textos, es propiedad exclusiva de Wordkana y está protegido por leyes de propiedad intelectual.</p>
+                    
+                    <h3>10. MODIFICACIONES</h3>
+                    <p>Wordkana se reserva el derecho de modificar estos Términos y Condiciones en cualquier momento. El uso continuado de la plataforma después de dichas modificaciones constituye la aceptación de los nuevos términos.</p>
+                    
+                    <h3>11. LEY APLICABLE</h3>
+                    <p>Estos términos se rigen por las leyes del Estado Plurinacional de Bolivia. Cualquier disputa será resuelta en los tribunales competentes de Bolivia.</p>
+                    
+                    <h3>12. RIESGOS FINANCIEROS</h3>
+                    <p>El usuario reconoce que el uso de la plataforma implica riesgos financieros. Los fondos depositados en Wordkana no constituyen una inversión financiera regulada. Usted es responsable de las decisiones que tome respecto al uso de fondos en la plataforma.</p>
+                    
+                    <h3>13. LIMITACIÓN DE RESPONSABILIDAD</h3>
+                    <p>En el máximo alcance permitido por la ley aplicable, Wordkana no será responsable por pérdidas económicas, daños indirectos, incidentales, especiales o consecuentes que puedan derivarse del uso de la plataforma. El usuario utiliza el servicio bajo su propio riesgo y discreción.</p>
+                    
+                    <p class="terms-date"><em>Última actualización: 8 de diciembre de 2025</em></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-accept-terms" id="acceptTermsBtn">Aceptar y Cerrar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

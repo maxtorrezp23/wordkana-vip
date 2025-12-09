@@ -1,0 +1,14 @@
+{
+  "name": "login-app",
+  "version": "1.0.0",
+  "description": "Wordkana VIP E-commerce Platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "json-server --watch db.json --port 3000"
+  },
+  "dependencies": {
+    "express": "^4.22.1",
+    "json-server": "^0.17.4"
+  }
+}

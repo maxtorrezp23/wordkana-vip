@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Tienda Wordkana</title>
+    <link rel="stylesheet" href="tienda.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Debug de Tienda</h1>
+        <div id="debug-info"></div>
+        <hr>
+        <h2>Productos VIP 1</h2>
+        <div class="products-grid" id="productsGrid"></div>
+    </div>
+
+    <script>
+        console.log('=== DEBUG TIENDA INICIADO ===');
+        const debugInfo = document.getElementById('debug-info');
+        
+        // Verificar usuario
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        debugInfo.innerHTML += `<p><strong>Usuario:</strong> ${currentUser ? currentUser.name : 'NO ENCONTRADO'}</p>`;
+        console.log('Usuario:', currentUser);
+        
+        // Si no hay usuario, crear uno de prueba
+        if (!currentUser) {
+            const testUser = {
+                name: 'Usuario de Prueba',
+                phone: '+59170000000'
+            };
+            localStorage.setItem('currentUser', JSON.stringify(testUser));
+            debugInfo.innerHTML += `<p style="color: orange;">Usuario de prueba creado: ${testUser.name}</p>`;
+        }
+        
+        // Productos de VIP 1
+        const products = [
+            { id: 1, name: 'Smartphone Samsung A15', price: 50, image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=400' },
+            { id: 2, name: 'Laptop HP 15"', price: 55, image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400' },
+            { id: 3, name: 'Auriculares JBL', price: 25, image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400' },
+            { id: 4, name: 'Reloj Casio', price: 20, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400' },
+            { id: 5, name: 'Cámara Canon EOS', price: 35, image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400' }
+        ];
+        
+        debugInfo.innerHTML += `<p><strong>Productos a renderizar:</strong> ${products.length}</p>`;
+        console.log('Productos:', products);
+        
+        // Renderizar productos
+        const productsGrid = document.getElementById('productsGrid');
+        debugInfo.innerHTML += `<p><strong>Elemento productsGrid:</strong> ${productsGrid ? 'ENCONTRADO' : 'NO ENCONTRADO'}</p>`;
+        
+        if (productsGrid) {
+            products.forEach(product => {
+                console.log('Renderizando:', product.name);
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/400x300?text=${encodeURIComponent(product.name)}'">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">${product.price} Bs</div>
+                    <button class="btn-add-cart">Comprar Ahora</button>
+                `;
+                productsGrid.appendChild(card);
+            });
+            debugInfo.innerHTML += `<p style="color: green;"><strong>✓ Productos renderizados exitosamente</strong></p>`;
+            console.log('✓ Renderizado completo');
+        } else {
+            debugInfo.innerHTML += `<p style="color: red;"><strong>✗ ERROR: No se encontró el elemento productsGrid</strong></p>`;
+            console.error('ERROR: productsGrid no encontrado');
+        }
+        
+        console.log('=== DEBUG COMPLETADO ===');
+    </script>
+</body>
+</html>
