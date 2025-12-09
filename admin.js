@@ -432,15 +432,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         seed = (seed * level) % 1000;
         
         const ranges = {
-            2: { min: 1.05, max: 1.20 },
-            3: { min: 1.10, max: 1.30 },
-            4: { min: 1.15, max: 1.35 },
-            5: { min: 1.20, max: 1.40 },
-            6: { min: 1.25, max: 1.50 },
-            7: { min: 1.30, max: 1.60 },
-            8: { min: 1.35, max: 1.70 },
-            9: { min: 1.40, max: 1.80 },
-            10: { min: 1.50, max: 2.00 }
+            2: { min: 5.0, max: 7.0 },     // VIP 2: entre 5x y 7x (400% - 600%)
+            3: { min: 6.0, max: 8.5 },     // VIP 3: entre 6x y 8.5x (500% - 750%)
+            4: { min: 7.0, max: 10.0 },    // VIP 4: entre 7x y 10x (600% - 900%)
+            5: { min: 8.5, max: 12.0 },    // VIP 5: entre 8.5x y 12x (750% - 1100%)
+            6: { min: 10.0, max: 14.0 },   // VIP 6: entre 10x y 14x (900% - 1300%)
+            7: { min: 12.0, max: 16.0 },   // VIP 7: entre 12x y 16x (1100% - 1500%)
+            8: { min: 14.0, max: 19.0 },   // VIP 8: entre 14x y 19x (1300% - 1800%)
+            9: { min: 16.0, max: 22.0 },   // VIP 9: entre 16x y 22x (1500% - 2100%)
+            10: { min: 20.0, max: 25.0 }   // VIP 10: entre 20x y 25x (1900% - 2400%)
         };
         
         const range = ranges[level] || ranges[2];
