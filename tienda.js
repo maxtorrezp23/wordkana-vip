@@ -40,14 +40,29 @@ document.addEventListener('DOMContentLoaded', async function() {
         const userPhone = updatedUser.phone;
         console.log('Teléfono del usuario:', userPhone);
         
+        // Limpiar localStorage de productos comprados si no coincide con BD
+        // Esto previene que datos viejos/corruptos de localStorage interfieran
+        if (updatedUser.purchasedProducts) {
+            for (let level = 1; level <= 10; level++) {
+                const productsInDB = updatedUser.purchasedProducts[`level${level}`];
+                const productsInLocalStorage = JSON.parse(localStorage.getItem(`purchased_${userPhone}_level${level}`) || '[]');
+                
+                // Si hay datos en localStorage pero no en BD, limpiar localStorage
+                if (productsInLocalStorage.length > 0 && (!productsInDB || productsInDB.length === 0)) {
+                    console.warn(`Limpiando datos corruptos de localStorage para level${level}`);
+                    localStorage.removeItem(`purchased_${userPhone}_level${level}`);
+                }
+            }
+        }
+        
         // Obtener saldo y datos del usuario desde la base de datos
         let userBalance, userEarnings, userLevel;
         
-        // Priorizar datos de la base de datos
+        // Priorizar datos de la base de datos (sin fallback a 100)
         if (updatedUser.balance !== undefined) {
             userBalance = updatedUser.balance;
         } else {
-            userBalance = parseFloat(localStorage.getItem(`balance_${userPhone}`) || 100);
+            userBalance = parseFloat(localStorage.getItem(`balance_${userPhone}`) || 0);
         }
         
         if (updatedUser.earnings !== undefined) {

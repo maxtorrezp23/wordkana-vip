@@ -177,9 +177,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                 return;
             }
             
-            // Calcular nuevo saldo
-            const currentBalance = user.balance || 100;
+            // Calcular nuevo saldo (usar 0 si no tiene balance)
+            const currentBalance = user.balance || 0;
             const newBalance = currentBalance + amount;
+            
+            console.log(`Agregando saldo: ${currentBalance} + ${amount} = ${newBalance}`);
             
             // Actualizar en la base de datos
             await updateUser(user.id, { balance: newBalance });
