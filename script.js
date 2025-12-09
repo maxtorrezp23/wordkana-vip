@@ -206,9 +206,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const phone = input.value.trim();
         const wrapper = input.closest('.phone-input-wrapper');
         
+        console.log('validatePhone called with:', phone);
+        
         if (!phone) {
             if (wrapper) wrapper.classList.add('error');
             showError(input, errorElement, 'El número de teléfono es requerido');
+            console.log('validatePhone: teléfono vacío');
             return false;
         }
         
@@ -216,20 +219,36 @@ document.addEventListener('DOMContentLoaded', function() {
         if (phone === '00000000') {
             if (wrapper) wrapper.classList.remove('error');
             clearError(input, errorElement);
+            console.log('validatePhone: admin OK');
             return true;
         }
         
-        // Formato boliviano: solo números, debe empezar con 6 o 7 y tener 8 dígitos
+        // Si no tiene wrapper (es login), solo verificar que tenga números
+        if (!wrapper) {
+            const onlyNumbers = /^\d{7,8}$/;
+            if (!onlyNumbers.test(phone)) {
+                showError(input, errorElement, 'Ingresa solo números (7-8 dígitos)');
+                console.log('validatePhone: formato inválido en login');
+                return false;
+            }
+            clearError(input, errorElement);
+            console.log('validatePhone: login OK');
+            return true;
+        }
+        
+        // Si tiene wrapper (es registro), validar formato boliviano
         const bolivianPhoneRegex = /^[67]\d{7}$/;
         
         if (!bolivianPhoneRegex.test(phone)) {
             if (wrapper) wrapper.classList.add('error');
             showError(input, errorElement, 'Número inválido. Debe empezar con 6 o 7 (8 dígitos)');
+            console.log('validatePhone: formato boliviano inválido');
             return false;
         }
         
         if (wrapper) wrapper.classList.remove('error');
         clearError(input, errorElement);
+        console.log('validatePhone: registro OK');
         return true;
     }
     
