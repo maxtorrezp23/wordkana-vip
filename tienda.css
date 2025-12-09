@@ -368,11 +368,14 @@ body {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, #0071ce 0%, #004f9a 100%);
 }
 
 .banner-image {
     width: 100%;
-    height: auto;
+    height: 250px;
+    object-fit: cover;
+    object-position: center;
     display: block;
 }
 
