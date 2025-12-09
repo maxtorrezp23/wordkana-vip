@@ -15,53 +15,66 @@ app.use(express.static(path.join(__dirname)));
 const usePostgres = !!process.env.DATABASE_URL;
 
 if (usePostgres) {
-    console.log('🐘 Usando PostgreSQL');
-    const db = require('./database');
-    
-    // Inicializar base de datos
-    db.initDatabase().catch(console.error);
-    
-    // Rutas de API con PostgreSQL
-    app.get('/api/users', async (req, res) => {
-        try {
-            if (req.query.phone) {
-                const user = await db.getUserByPhone(req.query.phone);
-                res.json(user ? [user] : []);
-            } else if (req.query.referralCode) {
-                const user = await db.getUserByReferralCode(req.query.referralCode);
-                res.json(user ? [user] : []);
-            } else {
-                const users = await db.getAllUsers();
-                res.json(users);
+    console.log('🐘 Intentando conectar a PostgreSQL...');
+    try {
+        const db = require('./database');
+        
+        // Inicializar base de datos
+        db.initDatabase().catch(err => {
+            console.error('❌ Error al inicializar PostgreSQL:', err.message);
+        });
+        
+        // Rutas de API con PostgreSQL
+        app.get('/api/users', async (req, res) => {
+            try {
+                if (req.query.phone) {
+                    const user = await db.getUserByPhone(req.query.phone);
+                    res.json(user ? [user] : []);
+                } else if (req.query.referralCode) {
+                    const user = await db.getUserByReferralCode(req.query.referralCode);
+                    res.json(user ? [user] : []);
+                } else {
+                    const users = await db.getAllUsers();
+                    res.json(users);
+                }
+            } catch (error) {
+                console.error('Error en GET /api/users:', error);
+                res.status(500).json({ error: 'Error al obtener usuarios' });
             }
-        } catch (error) {
-            console.error('Error en GET /api/users:', error);
-            res.status(500).json({ error: 'Error al obtener usuarios' });
-        }
-    });
-    
-    app.post('/api/users', async (req, res) => {
-        try {
-            const newUser = await db.createUser(req.body);
-            res.status(201).json(newUser);
-        } catch (error) {
-            console.error('Error en POST /api/users:', error);
-            res.status(500).json({ error: 'Error al crear usuario' });
-        }
-    });
-    
-    app.patch('/api/users/:id', async (req, res) => {
-        try {
-            const updatedUser = await db.updateUser(parseInt(req.params.id), req.body);
-            res.json(updatedUser);
-        } catch (error) {
-            console.error('Error en PATCH /api/users/:id:', error);
-            res.status(500).json({ error: 'Error al actualizar usuario' });
-        }
-    });
-    
+        });
+        
+        app.post('/api/users', async (req, res) => {
+            try {
+                const newUser = await db.createUser(req.body);
+                res.status(201).json(newUser);
+            } catch (error) {
+                console.error('Error en POST /api/users:', error);
+                res.status(500).json({ error: 'Error al crear usuario' });
+            }
+        });
+        
+        app.patch('/api/users/:id', async (req, res) => {
+            try {
+                const updatedUser = await db.updateUser(parseInt(req.params.id), req.body);
+                res.json(updatedUser);
+            } catch (error) {
+                console.error('Error en PATCH /api/users/:id:', error);
+                res.status(500).json({ error: 'Error al actualizar usuario' });
+            }
+        });
+        
+        console.log('✅ PostgreSQL configurado correctamente');
+    } catch (error) {
+        console.error('❌ Error al cargar módulo de PostgreSQL:', error.message);
+        console.log('⚠️  Cayendo a JSON Server...');
+        setupJsonServer();
+    }
 } else {
     console.log('📄 Usando JSON Server (desarrollo)');
+    setupJsonServer();
+}
+
+function setupJsonServer() {
     // API con json-server para desarrollo local
     const router = jsonServer.router('db.json');
     const middlewares = jsonServer.defaults();
