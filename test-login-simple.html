@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test de Login API</h1>
+    <p>Teléfono: <input type="text" id="phone" value="77080900"></p>
+    <p>Contraseña: <input type="password" id="password" value="123123"></p>
+    <button onclick="testLogin()">Probar Login</button>
+    <button onclick="testAPI()">Probar API Directa</button>
+    <div id="result"></div>
+
+    <script>
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:3000/api' 
+            : window.location.origin + '/api';
+
+        document.getElementById('result').innerHTML = '<strong>API_URL:</strong> ' + API_URL;
+
+        async function testAPI() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Probando conexión a la API...';
+            
+            try {
+                const response = await fetch(`${API_URL}/users`);
+                const users = await response.json();
+                result.innerHTML = `<strong>✅ API funciona!</strong><br>
+                    Usuarios encontrados: ${users.length}<br>
+                    <pre>${JSON.stringify(users, null, 2)}</pre>`;
+            } catch (error) {
+                result.innerHTML = `<strong>❌ Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function testLogin() {
+            const result = document.getElementById('result');
+            const phoneInput = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
+            const phone = '+591' + phoneInput;
+            
+            result.innerHTML = `Probando login...<br>Teléfono: ${phone}<br>Contraseña: ${password}`;
+            
+            try {
+                // Buscar usuario
+                const response = await fetch(`${API_URL}/users?phone=${encodeURIComponent(phone)}`);
+                const users = await response.json();
+                
+                console.log('Respuesta API:', users);
+                
+                if (users.length === 0) {
+                    result.innerHTML = `<strong>❌ Usuario no encontrado</strong><br>Teléfono buscado: ${phone}`;
+                    return;
+                }
+                
+                const user = users[0];
+                
+                if (user.password === password) {
+                    result.innerHTML = `<strong>✅ LOGIN EXITOSO!</strong><br>
+                        Nombre: ${user.name}<br>
+                        Teléfono: ${user.phone}<br>
+                        Nivel: ${user.level}<br>
+                        Saldo: $${user.balance}`;
+                } else {
+                    result.innerHTML = `<strong>❌ Contraseña incorrecta</strong><br>
+                        Usuario encontrado: ${user.name}<br>
+                        Contraseña en BD: ${user.password}<br>
+                        Contraseña ingresada: ${password}`;
+                }
+            } catch (error) {
+                result.innerHTML = `<strong>❌ Error:</strong> ${error.message}<br>
+                    <pre>${error.stack}</pre>`;
+                console.error('Error completo:', error);
+            }
+        }
+    </script>
+</body>
+</html>
