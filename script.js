@@ -327,7 +327,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const phoneInput = loginPhone.value.trim();
         const password = loginPassword.value;
         console.log('Datos:', { phoneInput, password });
-        const remember = document.getElementById('remember').checked;
+        const rememberCheckbox = document.getElementById('remember');
+        const remember = rememberCheckbox ? rememberCheckbox.checked : false;
         
         const loginButton = loginForm.querySelector('.btn-login');
         const originalText = loginButton.textContent;
