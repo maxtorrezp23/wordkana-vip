@@ -1,10 +1,10 @@
 // Verificar si el usuario ha iniciado sesión
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     console.log('=== CARGANDO TIENDA ===');
     
     try {
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        console.log('Usuario actual:', currentUser);
+        console.log('Usuario actual (localStorage):', currentUser);
         
         if (!currentUser) {
             console.log('No hay usuario, redirigiendo a login');
@@ -13,37 +13,51 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // Cargar datos actualizados desde la base de datos
+        let updatedUser = currentUser;
+        try {
+            const userFromDB = await getUserByPhone(currentUser.phone);
+            if (userFromDB) {
+                updatedUser = userFromDB;
+                // Actualizar localStorage con datos frescos
+                localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                console.log('Datos actualizados desde BD:', updatedUser);
+            }
+        } catch (error) {
+            console.error('Error al cargar datos de BD, usando localStorage:', error);
+        }
+        
         // Mostrar información del usuario
         const userNameElement = document.getElementById('userName');
         if (userNameElement) {
-            userNameElement.textContent = currentUser.name;
-            console.log('Nombre de usuario establecido:', currentUser.name);
+            userNameElement.textContent = updatedUser.name;
+            console.log('Nombre de usuario establecido:', updatedUser.name);
         } else {
             console.error('Elemento userName no encontrado');
         }
         
         // Guardar el teléfono del usuario para uso global
-        const userPhone = currentUser.phone;
+        const userPhone = updatedUser.phone;
         console.log('Teléfono del usuario:', userPhone);
         
         // Obtener saldo y datos del usuario desde la base de datos
         let userBalance, userEarnings, userLevel;
         
         // Priorizar datos de la base de datos
-        if (currentUser.balance !== undefined) {
-            userBalance = currentUser.balance;
+        if (updatedUser.balance !== undefined) {
+            userBalance = updatedUser.balance;
         } else {
             userBalance = parseFloat(localStorage.getItem(`balance_${userPhone}`) || 100);
         }
         
-        if (currentUser.earnings !== undefined) {
-            userEarnings = currentUser.earnings;
+        if (updatedUser.earnings !== undefined) {
+            userEarnings = updatedUser.earnings;
         } else {
             userEarnings = parseFloat(localStorage.getItem(`earnings_${userPhone}`) || 0);
         }
         
-        if (currentUser.level !== undefined) {
-            userLevel = currentUser.level;
+        if (updatedUser.level !== undefined) {
+            userLevel = updatedUser.level;
         } else {
             userLevel = parseInt(localStorage.getItem(`level_${userPhone}`) || 1);
         }
@@ -55,9 +69,15 @@ document.addEventListener('DOMContentLoaded', function() {
         updateBalance(userBalance);
         updateEarnings(userEarnings);
         
-        // Obtener productos comprados en el nivel actual
-        let purchasedProducts = JSON.parse(localStorage.getItem(`purchased_${userPhone}_level${userLevel}`) || '[]');
-        console.log('Productos ya comprados:', purchasedProducts);
+        // Obtener productos comprados en el nivel actual desde la BD o localStorage
+        let purchasedProducts = [];
+        if (updatedUser.purchasedProducts && updatedUser.purchasedProducts[`level${userLevel}`]) {
+            purchasedProducts = updatedUser.purchasedProducts[`level${userLevel}`];
+            console.log('Productos comprados cargados desde BD:', purchasedProducts);
+        } else {
+            purchasedProducts = JSON.parse(localStorage.getItem(`purchased_${userPhone}_level${userLevel}`) || '[]');
+            console.log('Productos comprados cargados desde localStorage:', purchasedProducts);
+        }
         
         // Definición de productos por VIP (20 productos por cada VIP) con precios realistas en Bs
     const productsByLevel = {
@@ -503,7 +523,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Confirmar compra desde el modal
-    document.getElementById('confirmBuyBtn').addEventListener('click', function() {
+    document.getElementById('confirmBuyBtn').addEventListener('click', async function() {
         if (!selectedProduct || selectedProduct.purchased) {
             showMessage('Producto no disponible', 'error');
             return;
@@ -522,6 +542,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Marcar producto como comprado
         selectedProduct.purchased = true;
         purchasedProducts.push(selectedProduct.id);
+        
+        // Guardar en localStorage (compatibilidad)
         localStorage.setItem(`purchased_${userPhone}_level${userLevel}`, JSON.stringify(purchasedProducts));
         
         // Actualizar saldo
@@ -533,6 +555,27 @@ document.addEventListener('DOMContentLoaded', function() {
         userEarnings += bonus;
         updateEarnings(userEarnings);
         localStorage.setItem(`earnings_${userPhone}`, userEarnings);
+        
+        // Actualizar en la base de datos (incluyendo productos comprados)
+        try {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser && currentUser.id) {
+                // Obtener estructura actual de productos comprados
+                const updatedUserData = await getUserByPhone(userPhone);
+                const purchasedProductsObj = updatedUserData.purchasedProducts || {};
+                purchasedProductsObj[`level${userLevel}`] = purchasedProducts;
+                
+                await updateUser(currentUser.id, {
+                    balance: userBalance,
+                    earnings: userEarnings,
+                    level: userLevel,
+                    purchasedProducts: purchasedProductsObj
+                });
+                console.log('Datos actualizados en BD:', { balance: userBalance, earnings: userEarnings, level: userLevel, purchasedProducts: purchasedProductsObj });
+            }
+        } catch (error) {
+            console.error('Error al actualizar BD:', error);
+        }
         
         // Cerrar modal
         document.getElementById('productModal').classList.remove('show');
@@ -571,13 +614,32 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Subir de VIP
-    function levelUp() {
+    async function levelUp() {
         userLevel++;
         localStorage.setItem(`level_${userPhone}`, userLevel);
         
         // Resetear productos comprados para el nuevo VIP
         purchasedProducts = [];
         localStorage.setItem(`purchased_${userPhone}_level${userLevel}`, JSON.stringify(purchasedProducts));
+        
+        // Actualizar nivel y productos comprados en la base de datos
+        try {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser && currentUser.id) {
+                // Obtener estructura actual de productos comprados
+                const updatedUserData = await getUserByPhone(userPhone);
+                const purchasedProductsObj = updatedUserData.purchasedProducts || {};
+                purchasedProductsObj[`level${userLevel}`] = []; // Nuevo nivel sin compras
+                
+                await updateUser(currentUser.id, { 
+                    level: userLevel,
+                    purchasedProducts: purchasedProductsObj
+                });
+                console.log('Nivel actualizado en BD:', userLevel);
+            }
+        } catch (error) {
+            console.error('Error al actualizar nivel en BD:', error);
+        }
         
         // Generar nuevos productos para el VIP
         products = generateProductsForLevel(userLevel);
