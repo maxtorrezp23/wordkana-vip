@@ -47,10 +47,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         tbody.innerHTML = '';
         
         users.forEach(user => {
-            // Priorizar datos de la base de datos, con fallback a localStorage
-            const balance = user.balance !== undefined ? user.balance : parseFloat(localStorage.getItem(`balance_${user.phone}`) || 100);
-            const earnings = user.earnings !== undefined ? user.earnings : parseFloat(localStorage.getItem(`earnings_${user.phone}`) || 0);
-            const userLevel = user.level !== undefined ? user.level : parseInt(localStorage.getItem(`level_${user.phone}`) || 1);
+            // Usar datos de la base de datos directamente (ya no usar fallback de 100)
+            const balance = user.balance !== undefined ? user.balance : 0;
+            const earnings = user.earnings !== undefined ? user.earnings : 0;
+            const userLevel = user.level !== undefined ? user.level : 1;
             const date = new Date(user.createdAt).toLocaleDateString('es-BO');
             
             const row = document.createElement('tr');
@@ -722,13 +722,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         const priceInputs = document.querySelectorAll('.product-price-input');
         const customPrices = {};
         
+        let invalidPrices = 0;
         priceInputs.forEach(input => {
             const productName = input.dataset.productName;
             const price = parseFloat(input.value);
             if (price > 0) {
                 customPrices[productName] = price;
+            } else {
+                invalidPrices++;
             }
         });
+        
+        if (invalidPrices > 0) {
+            alert(`Hay ${invalidPrices} productos con precios inválidos. Por favor verifica.`);
+            return;
+        }
         
         try {
             // Buscar el usuario en la base de datos
@@ -738,12 +746,19 @@ document.addEventListener('DOMContentLoaded', async function() {
                 return;
             }
 
+            console.log('Usuario encontrado:', user.name);
+            console.log('Actualizando precios para VIP', currentEditingUser.userLevel);
+            console.log('Total de productos:', Object.keys(customPrices).length);
+
             // Obtener estructura actual de precios personalizados
             const customPricesObj = user.customPrices || {};
             customPricesObj[`level${currentEditingUser.userLevel}`] = customPrices;
 
+            console.log('Objeto de precios a guardar:', customPricesObj);
+
             // Actualizar en la base de datos
-            await updateUser(user.id, { customPrices: customPricesObj });
+            const result = await updateUser(user.id, { customPrices: customPricesObj });
+            console.log('Resultado de la actualización:', result);
 
             // También guardar en localStorage por compatibilidad
             localStorage.setItem(`custom_prices_${currentEditingUser.phone}_level${currentEditingUser.userLevel}`, JSON.stringify(customPrices));
@@ -762,9 +777,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             
             showMessage('Precios actualizados exitosamente', 'success');
             document.getElementById('productsModal').style.display = 'none';
+            
+            // Recargar usuarios para ver cambios
+            await loadUsers();
         } catch (error) {
-            console.error('Error al guardar precios:', error);
-            alert('Error al guardar precios. Verifica que el servidor esté funcionando.');
+            console.error('Error detallado al guardar precios:', error);
+            alert(`Error al guardar precios: ${error.message}\nRevisa la consola para más detalles.`);
         }
         
         renderHistory();
