@@ -201,31 +201,50 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
     
     // Confirmar retirar ganancias
-    document.getElementById('confirmWithdraw').addEventListener('click', function() {
+    document.getElementById('confirmWithdraw').addEventListener('click', async function() {
         const amount = parseFloat(document.getElementById('amountToWithdraw').value);
-        const currentEarnings = parseFloat(localStorage.getItem(`earnings_${currentEditingUser}`) || 0);
         
         if (!amount || amount <= 0) {
             alert('Por favor ingresa una cantidad válida');
             return;
         }
         
-        if (amount > currentEarnings) {
-            alert('La cantidad a retirar no puede ser mayor a las ganancias actuales');
-            return;
+        try {
+            // Buscar el usuario en la base de datos
+            const user = allUsers.find(u => u.phone === currentEditingUser);
+            if (!user) {
+                alert('Usuario no encontrado');
+                return;
+            }
+            
+            const currentEarnings = user.earnings || 0;
+            
+            if (amount > currentEarnings) {
+                alert('La cantidad a retirar no puede ser mayor a las ganancias actuales');
+                return;
+            }
+            
+            const newEarnings = currentEarnings - amount;
+            
+            // Actualizar en la base de datos
+            await updateUser(user.id, { earnings: newEarnings });
+            
+            // También actualizar en localStorage por compatibilidad
+            localStorage.setItem(`earnings_${currentEditingUser}`, newEarnings);
+            
+            // Registrar en historial
+            addToHistory('withdrawal', user.name, currentEditingUser, amount);
+            
+            withdrawModal.style.display = 'none';
+            showMessage(`Se retiraron ${amount.toFixed(2)} Bs de las ganancias del usuario`, 'success');
+            
+            // Recargar lista de usuarios
+            await loadUsers();
+        } catch (error) {
+            console.error('Error al retirar ganancias:', error);
+            alert('Error al retirar ganancias. Verifica que el servidor esté funcionando.');
         }
         
-        const newEarnings = currentEarnings - amount;
-        localStorage.setItem(`earnings_${currentEditingUser}`, newEarnings);
-        
-        // Registrar en historial
-        const user = allUsers.find(u => u.phone === currentEditingUser);
-        addToHistory('withdrawal', user.name, currentEditingUser, amount);
-        
-        withdrawModal.style.display = 'none';
-        showMessage(`Se retiraron ${amount.toFixed(2)} Bs de las ganancias del usuario`, 'success');
-        
-        loadUsers();
         renderHistory();
     });
     
@@ -331,7 +350,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('vipModal').style.display = 'none';
     };
 
-    document.getElementById('confirmVipChange').onclick = function() {
+    document.getElementById('confirmVipChange').onclick = async function() {
         const newLevel = parseInt(document.getElementById('newVipLevel').value);
         
         if (newLevel < 1 || newLevel > 10) {
@@ -339,27 +358,48 @@ document.addEventListener('DOMContentLoaded', async function() {
             return;
         }
 
-        // Cambiar el nivel VIP
-        localStorage.setItem(`level_${currentEditingUser.phone}`, newLevel);
+        try {
+            // Buscar el usuario en la base de datos
+            const user = allUsers.find(u => u.phone === currentEditingUser.phone);
+            if (!user) {
+                alert('Usuario no encontrado');
+                return;
+            }
+
+            // Resetear productos comprados para el nuevo nivel
+            const purchasedProductsObj = user.purchasedProducts || {};
+            purchasedProductsObj[`level${newLevel}`] = []; // Nuevo nivel sin compras
+
+            // Actualizar nivel en la base de datos
+            await updateUser(user.id, { 
+                level: newLevel,
+                purchasedProducts: purchasedProductsObj
+            });
+
+            // También actualizar localStorage por compatibilidad
+            localStorage.setItem(`level_${currentEditingUser.phone}`, newLevel);
+            localStorage.setItem(`purchased_${currentEditingUser.phone}_level${newLevel}`, JSON.stringify([]));
+            
+            // Agregar a historial
+            transactionHistory.push({
+                date: new Date().toISOString(),
+                user: currentEditingUser.name,
+                phone: currentEditingUser.phone,
+                type: 'vip_change',
+                amount: newLevel,
+                admin: 'Admin',
+                description: `Cambio de VIP ${currentEditingUser.currentLevel} a VIP ${newLevel}`
+            });
+            localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
+            
+            showMessage(`VIP cambiado exitosamente a VIP ${newLevel}`, 'success');
+            document.getElementById('vipModal').style.display = 'none';
+            await loadUsers();
+        } catch (error) {
+            console.error('Error al cambiar VIP:', error);
+            alert('Error al cambiar VIP. Verifica que el servidor esté funcionando.');
+        }
         
-        // Resetear productos comprados para el nuevo nivel
-        localStorage.setItem(`purchased_${currentEditingUser.phone}_level${newLevel}`, JSON.stringify([]));
-        
-        // Agregar a historial
-        transactionHistory.push({
-            date: new Date().toISOString(),
-            user: currentEditingUser.name,
-            phone: currentEditingUser.phone,
-            type: 'vip_change',
-            amount: newLevel,
-            admin: 'Admin',
-            description: `Cambio de VIP ${currentEditingUser.currentLevel} a VIP ${newLevel}`
-        });
-        localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
-        
-        showMessage(`VIP cambiado exitosamente a VIP ${newLevel}`, 'success');
-        document.getElementById('vipModal').style.display = 'none';
-        loadUsers();
         renderHistory();
     };
 
@@ -411,8 +451,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     function loadUserProducts(phone, level) {
-        // Obtener precios personalizados si existen
-        const customPrices = JSON.parse(localStorage.getItem(`custom_prices_${phone}_level${level}`) || '{}');
+        // Buscar el usuario en la base de datos para obtener precios personalizados
+        const user = allUsers.find(u => u.phone === phone);
+        const customPricesFromDB = (user && user.customPrices && user.customPrices[`level${level}`]) || {};
+        
+        // Fallback a localStorage si no hay en BD
+        const customPricesFromLocalStorage = JSON.parse(localStorage.getItem(`custom_prices_${phone}_level${level}`) || '{}');
+        
+        // Priorizar BD sobre localStorage
+        const customPrices = Object.keys(customPricesFromDB).length > 0 ? customPricesFromDB : customPricesFromLocalStorage;
         
         // Productos por nivel (todos los 10 niveles con 20 productos cada uno)
         const productsByLevel = {
@@ -671,7 +718,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
 
-    document.getElementById('saveProductPrices').onclick = function() {
+    document.getElementById('saveProductPrices').onclick = async function() {
         const priceInputs = document.querySelectorAll('.product-price-input');
         const customPrices = {};
         
@@ -683,23 +730,43 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         });
         
-        // Guardar precios personalizados
-        localStorage.setItem(`custom_prices_${currentEditingUser.phone}_level${currentEditingUser.userLevel}`, JSON.stringify(customPrices));
+        try {
+            // Buscar el usuario en la base de datos
+            const user = allUsers.find(u => u.phone === currentEditingUser.phone);
+            if (!user) {
+                alert('Usuario no encontrado');
+                return;
+            }
+
+            // Obtener estructura actual de precios personalizados
+            const customPricesObj = user.customPrices || {};
+            customPricesObj[`level${currentEditingUser.userLevel}`] = customPrices;
+
+            // Actualizar en la base de datos
+            await updateUser(user.id, { customPrices: customPricesObj });
+
+            // También guardar en localStorage por compatibilidad
+            localStorage.setItem(`custom_prices_${currentEditingUser.phone}_level${currentEditingUser.userLevel}`, JSON.stringify(customPrices));
+            
+            // Agregar a historial
+            transactionHistory.push({
+                date: new Date().toISOString(),
+                user: currentEditingUser.name,
+                phone: currentEditingUser.phone,
+                type: 'price_edit',
+                amount: 0,
+                admin: 'Admin',
+                description: `Precios personalizados aplicados para VIP ${currentEditingUser.userLevel}`
+            });
+            localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
+            
+            showMessage('Precios actualizados exitosamente', 'success');
+            document.getElementById('productsModal').style.display = 'none';
+        } catch (error) {
+            console.error('Error al guardar precios:', error);
+            alert('Error al guardar precios. Verifica que el servidor esté funcionando.');
+        }
         
-        // Agregar a historial
-        transactionHistory.push({
-            date: new Date().toISOString(),
-            user: currentEditingUser.name,
-            phone: currentEditingUser.phone,
-            type: 'price_edit',
-            amount: 0,
-            admin: 'Admin',
-            description: `Precios personalizados aplicados para VIP ${currentEditingUser.userLevel}`
-        });
-        localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
-        
-        showMessage('Precios actualizados exitosamente', 'success');
-        document.getElementById('productsModal').style.display = 'none';
         renderHistory();
     };
 

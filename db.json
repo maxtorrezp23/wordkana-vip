@@ -12,6 +12,7 @@
       "earnings": 0,
       "level": 1,
       "purchasedProducts": {},
+      "customPrices": {},
       "id": 1
     },
     {
@@ -26,6 +27,7 @@
       "earnings": 0,
       "level": 1,
       "purchasedProducts": {},
+      "customPrices": {},
       "id": 2
     },
     {
@@ -40,6 +42,7 @@
       "earnings": 0,
       "level": 1,
       "purchasedProducts": {},
+      "customPrices": {},
       "id": 3
     }
   ]

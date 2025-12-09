@@ -343,9 +343,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     function generateProductsForLevel(level) {
         const levelProducts = productsByLevel[level] || productsByLevel[1];
         
-        // Verificar si hay precios personalizados para este usuario y nivel
-        const customPricesKey = `custom_prices_${userPhone}_level${level}`;
-        const customPrices = JSON.parse(localStorage.getItem(customPricesKey) || '{}');
+        // Obtener precios personalizados desde la BD o localStorage
+        let customPrices = {};
+        
+        // Priorizar datos de la base de datos
+        const currentUserData = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUserData && currentUserData.customPrices && currentUserData.customPrices[`level${level}`]) {
+            customPrices = currentUserData.customPrices[`level${level}`];
+        } else {
+            // Fallback a localStorage
+            const customPricesKey = `custom_prices_${userPhone}_level${level}`;
+            customPrices = JSON.parse(localStorage.getItem(customPricesKey) || '{}');
+        }
         
         return levelProducts.map((template, index) => {
             let finalPrice;
