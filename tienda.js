@@ -26,21 +26,34 @@ document.addEventListener('DOMContentLoaded', function() {
         const userPhone = currentUser.phone;
         console.log('Teléfono del usuario:', userPhone);
         
-        // Obtener o inicializar el saldo del usuario
-        let userBalance = localStorage.getItem(`balance_${userPhone}`) || 100;
-        userBalance = parseFloat(userBalance);
+        // Obtener saldo y datos del usuario desde la base de datos
+        let userBalance, userEarnings, userLevel;
+        
+        // Priorizar datos de la base de datos
+        if (currentUser.balance !== undefined) {
+            userBalance = currentUser.balance;
+        } else {
+            userBalance = parseFloat(localStorage.getItem(`balance_${userPhone}`) || 100);
+        }
+        
+        if (currentUser.earnings !== undefined) {
+            userEarnings = currentUser.earnings;
+        } else {
+            userEarnings = parseFloat(localStorage.getItem(`earnings_${userPhone}`) || 0);
+        }
+        
+        if (currentUser.level !== undefined) {
+            userLevel = currentUser.level;
+        } else {
+            userLevel = parseInt(localStorage.getItem(`level_${userPhone}`) || 1);
+        }
+        
         console.log('Saldo inicial:', userBalance);
-        updateBalance(userBalance);
-        
-        // Obtener o inicializar las ganancias del usuario
-        let userEarnings = localStorage.getItem(`earnings_${userPhone}`) || 0;
-        userEarnings = parseFloat(userEarnings);
         console.log('Ganancias iniciales:', userEarnings);
-        updateEarnings(userEarnings);
-        
-        // Obtener o inicializar el nivel del usuario
-        let userLevel = parseInt(localStorage.getItem(`level_${userPhone}`) || 1);
         console.log('Nivel VIP:', userLevel);
+        
+        updateBalance(userBalance);
+        updateEarnings(userEarnings);
         
         // Obtener productos comprados en el nivel actual
         let purchasedProducts = JSON.parse(localStorage.getItem(`purchased_${userPhone}_level${userLevel}`) || '[]');

@@ -47,9 +47,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         tbody.innerHTML = '';
         
         users.forEach(user => {
-            const balance = parseFloat(localStorage.getItem(`balance_${user.phone}`) || 100);
-            const earnings = parseFloat(localStorage.getItem(`earnings_${user.phone}`) || 0);
-            const userLevel = parseInt(localStorage.getItem(`level_${user.phone}`) || 1);
+            // Priorizar datos de la base de datos, con fallback a localStorage
+            const balance = user.balance !== undefined ? user.balance : parseFloat(localStorage.getItem(`balance_${user.phone}`) || 100);
+            const earnings = user.earnings !== undefined ? user.earnings : parseFloat(localStorage.getItem(`earnings_${user.phone}`) || 0);
+            const userLevel = user.level !== undefined ? user.level : parseInt(localStorage.getItem(`level_${user.phone}`) || 1);
             const date = new Date(user.createdAt).toLocaleDateString('es-BO');
             
             const row = document.createElement('tr');
@@ -157,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     };
     
     // Confirmar agregar saldo
-    document.getElementById('confirmAddBalance').addEventListener('click', function() {
+    document.getElementById('confirmAddBalance').addEventListener('click', async function() {
         const amount = parseFloat(document.getElementById('amountToAdd').value);
         
         if (!amount || amount <= 0) {
@@ -165,19 +166,37 @@ document.addEventListener('DOMContentLoaded', async function() {
             return;
         }
         
-        const currentBalance = parseFloat(localStorage.getItem(`balance_${currentEditingUser}`) || 100);
-        const newBalance = currentBalance + amount;
+        try {
+            // Buscar el usuario en la base de datos
+            const user = allUsers.find(u => u.phone === currentEditingUser);
+            if (!user) {
+                alert('Usuario no encontrado');
+                return;
+            }
+            
+            // Calcular nuevo saldo
+            const currentBalance = user.balance || 100;
+            const newBalance = currentBalance + amount;
+            
+            // Actualizar en la base de datos
+            await updateUser(user.id, { balance: newBalance });
+            
+            // También actualizar en localStorage por compatibilidad
+            localStorage.setItem(`balance_${currentEditingUser}`, newBalance);
+            
+            // Registrar en historial
+            addToHistory('deposit', user.name, currentEditingUser, amount);
+            
+            addBalanceModal.style.display = 'none';
+            showMessage(`Se agregaron ${amount.toFixed(2)} Bs al saldo del usuario`, 'success');
+            
+            // Recargar lista de usuarios
+            await loadUsers();
+        } catch (error) {
+            console.error('Error al agregar saldo:', error);
+            alert('Error al agregar saldo. Verifica que el servidor esté funcionando.');
+        }
         
-        localStorage.setItem(`balance_${currentEditingUser}`, newBalance);
-        
-        // Registrar en historial
-        const user = allUsers.find(u => u.phone === currentEditingUser);
-        addToHistory('deposit', user.name, currentEditingUser, amount);
-        
-        addBalanceModal.style.display = 'none';
-        showMessage(`Se agregaron ${amount.toFixed(2)} Bs al saldo del usuario`, 'success');
-        
-        loadUsers();
         renderHistory();
     });
     
