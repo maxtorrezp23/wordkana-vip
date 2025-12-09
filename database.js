@@ -144,6 +144,17 @@ async function updateUser(id, updates) {
     }
 }
 
+// Eliminar usuario
+async function deleteUser(id) {
+    try {
+        const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
+        return result.rows.length > 0 ? formatUser(result.rows[0]) : null;
+    } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        throw error;
+    }
+}
+
 // Formatear usuario de PostgreSQL a formato de la API
 function formatUser(row) {
     return {
@@ -173,5 +184,6 @@ module.exports = {
     getUserByPhone,
     getUserByReferralCode,
     createUser,
-    updateUser
+    updateUser,
+    deleteUser
 };

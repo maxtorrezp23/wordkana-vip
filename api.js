@@ -104,3 +104,20 @@ async function updateUser(userId, userData) {
         throw error;
     }
 }
+
+// Eliminar usuario
+async function deleteUser(userId) {
+    try {
+        const response = await fetch(`${API_URL}/users/${userId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error('Error al eliminar usuario');
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}

@@ -87,6 +87,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                         <button class="btn-action btn-products" onclick="openProductsModal('${user.phone}', '${user.name}', ${userLevel})">
                             💰 Editar Precios
                         </button>
+                        <button class="btn-action btn-delete" onclick="confirmDeleteUser(${user.id}, '${user.name}', '${user.phone}')">
+                            🗑️ Eliminar
+                        </button>
                     </div>
                 </td>
             `;
@@ -795,4 +798,42 @@ document.addEventListener('DOMContentLoaded', async function() {
             window.location.href = 'login.html';
         }
     });
+
+    // Función para confirmar y eliminar usuario
+    window.confirmDeleteUser = async function(userId, userName, userPhone) {
+        const confirmation = confirm(`⚠️ ¿Estás seguro de que deseas ELIMINAR al usuario "${userName}" (${userPhone})?\n\nEsta acción NO se puede deshacer.`);
+        
+        if (!confirmation) return;
+        
+        // Segunda confirmación para evitar eliminaciones accidentales
+        const doubleConfirm = confirm(`⚠️⚠️ ÚLTIMA CONFIRMACIÓN ⚠️⚠️\n\nSe eliminará PERMANENTEMENTE:\n- Usuario: ${userName}\n- Teléfono: ${userPhone}\n- Todo su saldo, productos y progreso\n\n¿Continuar con la eliminación?`);
+        
+        if (!doubleConfirm) return;
+        
+        try {
+            console.log('Eliminando usuario ID:', userId);
+            await deleteUser(userId);
+            
+            // Agregar a historial
+            transactionHistory.push({
+                date: new Date().toISOString(),
+                user: userName,
+                phone: userPhone,
+                type: 'delete',
+                amount: 0,
+                admin: 'Admin',
+                description: `Usuario eliminado permanentemente`
+            });
+            localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
+            
+            showMessage(`Usuario "${userName}" eliminado exitosamente`, 'success');
+            
+            // Recargar lista de usuarios
+            await loadUsers();
+            renderHistory();
+        } catch (error) {
+            console.error('Error al eliminar usuario:', error);
+            alert(`Error al eliminar usuario: ${error.message}`);
+        }
+    };
 });

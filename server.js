@@ -63,6 +63,20 @@ if (usePostgres) {
             }
         });
         
+        app.delete('/api/users/:id', async (req, res) => {
+            try {
+                const deletedUser = await db.deleteUser(parseInt(req.params.id));
+                if (deletedUser) {
+                    res.json(deletedUser);
+                } else {
+                    res.status(404).json({ error: 'Usuario no encontrado' });
+                }
+            } catch (error) {
+                console.error('Error en DELETE /api/users/:id:', error);
+                res.status(500).json({ error: 'Error al eliminar usuario' });
+            }
+        });
+        
         console.log('✅ PostgreSQL configurado correctamente');
     } catch (error) {
         console.error('❌ Error al cargar módulo de PostgreSQL:', error.message);
