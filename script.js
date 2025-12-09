@@ -2,36 +2,47 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
-    const formTitle = document.getElementById('formTitle');
     const showRegisterLink = document.getElementById('showRegister');
     const showLoginLink = document.getElementById('showLogin');
     
-    // Alternar entre formularios
-    showRegisterLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        loginForm.classList.remove('form-active');
-        loginForm.classList.add('form-hidden');
-        registerForm.classList.remove('form-hidden');
-        registerForm.classList.add('form-active');
-        formTitle.setAttribute('data-translate', 'registerTitle');
-        applyTranslations(); // Aplicar traducción
-        clearAllErrors();
-    });
+    // Toggle password visibility
+    const togglePassword = document.getElementById('togglePassword');
+    const loginPassword = document.getElementById('loginPassword');
     
-    showLoginLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        registerForm.classList.remove('form-active');
-        registerForm.classList.add('form-hidden');
-        loginForm.classList.remove('form-hidden');
-        loginForm.classList.add('form-active');
-        formTitle.setAttribute('data-translate', 'loginTitle');
-        applyTranslations(); // Aplicar traducción
-        clearAllErrors();
-    });
+    if (togglePassword && loginPassword) {
+        togglePassword.addEventListener('click', function() {
+            const type = loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            loginPassword.setAttribute('type', type);
+            this.querySelector('.eye-icon').textContent = type === 'password' ? '👁' : '🙈';
+        });
+    }
+    
+    // Alternar entre formularios
+    if (showRegisterLink) {
+        showRegisterLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            loginForm.classList.remove('form-active');
+            loginForm.classList.add('form-hidden');
+            registerForm.classList.remove('form-hidden');
+            registerForm.classList.add('form-active');
+            clearAllErrors();
+        });
+    }
+    
+    if (showLoginLink) {
+        showLoginLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            registerForm.classList.remove('form-active');
+            registerForm.classList.add('form-hidden');
+            loginForm.classList.remove('form-hidden');
+            loginForm.classList.add('form-active');
+            clearAllErrors();
+        });
+    }
     
     // ========== FORMULARIO DE LOGIN ==========
     const loginPhone = document.getElementById('loginPhone');
-    const loginPassword = document.getElementById('loginPassword');
+    // loginPassword ya está declarado arriba
     const loginPhoneError = document.getElementById('loginPhoneError');
     const loginPasswordError = document.getElementById('loginPasswordError');
     

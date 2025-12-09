@@ -46,37 +46,32 @@
 
     <div class="container">
         <div class="login-box">
-            <h1 class="app-title">Workana Mercado Libre</h1>
-            <h2 id="formTitle" data-translate="loginTitle">Iniciar Sesión</h2>
+            <!-- Logo Walmart -->
+            <div class="logo-section">
+                <img src="https://i.postimg.cc/nczKpRnG/walmart.jpg" alt="Walmart" class="login-logo">
+            </div>
+            
+            <h1 class="app-title">Workana & MERCADOLIBRE</h1>
             
             <!-- Formulario de Login -->
             <form id="loginForm" class="form-active">
                 <div class="input-group">
-                    <label for="loginPhone" data-translate="phone">Número de Teléfono</label>
-                    <div class="phone-input-wrapper">
-                        <span class="phone-prefix">+591</span>
-                        <input type="tel" id="loginPhone" name="loginPhone" placeholder="71234567" required>
-                    </div>
+                    <input type="tel" id="loginPhone" name="loginPhone" placeholder="Número de teléfono" required>
                     <span class="error-message" id="loginPhoneError"></span>
                 </div>
                 
-                <div class="input-group">
-                    <label for="loginPassword" data-translate="password">Contraseña</label>
-                    <input type="password" id="loginPassword" name="loginPassword" placeholder="••••••••" required>
+                <div class="input-group password-group">
+                    <input type="password" id="loginPassword" name="loginPassword" placeholder="Contraseña" required>
+                    <button type="button" class="toggle-password" id="togglePassword">
+                        <span class="eye-icon">👁</span>
+                    </button>
                     <span class="error-message" id="loginPasswordError"></span>
                 </div>
                 
-                <div class="options">
-                    <div class="remember-me">
-                        <input type="checkbox" id="remember" name="remember">
-                        <label for="remember" data-translate="rememberMe">Recordarme</label>
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn-login" data-translate="loginButton">Iniciar Sesión</button>
+                <button type="submit" class="btn-login">Acceso</button>
                 
                 <div class="register-link">
-                    <span data-translate="noAccount">¿No tienes cuenta?</span> <a href="#" id="showRegister" data-translate="registerHere">Regístrate aquí</a>
+                    <a href="#" id="showRegister" data-translate="registerHere">Regístrate ahora</a>
                 </div>
             </form>
             
