@@ -68,7 +68,12 @@
         </div>
 
         <div class="history-section">
-            <h2>📜 Historial de Transacciones</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">📜 Historial de Transacciones</h2>
+                <button id="clearHistoryBtn" class="btn-clear-history" title="Limpiar todo el historial">
+                    🗑️ Limpiar Historial
+                </button>
+            </div>
             <div class="filter-buttons">
                 <button class="btn-filter active" data-filter="all">Todas</button>
                 <button class="btn-filter" data-filter="deposit">Cargas de Saldo</button>

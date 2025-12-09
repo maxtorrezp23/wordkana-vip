@@ -836,4 +836,28 @@ document.addEventListener('DOMContentLoaded', async function() {
             alert(`Error al eliminar usuario: ${error.message}`);
         }
     };
+
+    // Función para limpiar el historial de transacciones
+    document.getElementById('clearHistoryBtn').addEventListener('click', function() {
+        const historyCount = transactionHistory.length;
+        
+        if (historyCount === 0) {
+            alert('El historial ya está vacío.');
+            return;
+        }
+        
+        const confirmation = confirm(`⚠️ ¿Estás seguro de que deseas ELIMINAR TODO el historial?\n\nSe borrarán ${historyCount} registro(s) de transacciones.\n\nEsta acción NO se puede deshacer.`);
+        
+        if (!confirmation) return;
+        
+        // Limpiar el historial
+        transactionHistory = [];
+        localStorage.setItem('transactionHistory', JSON.stringify(transactionHistory));
+        
+        // Actualizar la vista
+        renderHistory();
+        
+        showMessage('Historial de transacciones eliminado exitosamente', 'success');
+        console.log('Historial limpiado por el administrador');
+    });
 });

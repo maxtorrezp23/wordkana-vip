@@ -455,6 +455,29 @@ tbody tr:hover {
     font-size: 24px;
 }
 
+.btn-clear-history {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+}
+
+.btn-clear-history:hover {
+    background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+}
+
+.btn-clear-history:active {
+    transform: translateY(0);
+}
+
 .filter-buttons {
     display: flex;
     gap: 10px;
