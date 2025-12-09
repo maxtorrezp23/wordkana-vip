@@ -430,8 +430,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             return 1.0;
         }
         
-        // A partir de VIP 2: incremento fijo de 600% (7x el precio base)
-        return 7.0;
+        // A partir de VIP 2: incremento de 3900% (40x el precio base) para valores reales
+        return 40.0;
     }
 
     function loadUserProducts(phone, level) {
