@@ -1,8 +1,10 @@
 // API para comunicarse con la base de datos
 // Detectar si estamos en producción o desarrollo
-const API_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:3000' 
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000/api' 
     : window.location.origin + '/api';
+
+console.log('API_URL configurada:', API_URL);
 
 // Obtener todos los usuarios
 async function getAllUsers() {
