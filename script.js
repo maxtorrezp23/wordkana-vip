@@ -468,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 referredBy: referrerUser ? referrerUser.phone : null,
                 totalReferrals: 0,
                 createdAt: new Date().toISOString(),
-                balance: 100,
+                balance: 0,
                 earnings: 0,
                 level: 1,
                 purchasedProducts: {},
