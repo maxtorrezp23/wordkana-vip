@@ -481,20 +481,25 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Si fue referido, dar bonos
             if (referrerUser) {
-                // Bono para el referente: 10 Bs
-                const referrerBalance = parseFloat(localStorage.getItem(`balance_${referrerUser.phone}`) || '0');
-                localStorage.setItem(`balance_${referrerUser.phone}`, (referrerBalance + 10).toString());
+                // Bono para el referente: 10 Bs al balance
+                const newReferrerBalance = (referrerUser.balance || 0) + 10;
                 
-                // Actualizar contador de referidos
-                referrerUser.totalReferrals = (referrerUser.totalReferrals || 0) + 1;
-                await updateUser(referrerUser.id, { totalReferrals: referrerUser.totalReferrals });
+                // Actualizar balance y contador de referidos en la base de datos
+                await updateUser(referrerUser.id, { 
+                    balance: newReferrerBalance,
+                    totalReferrals: (referrerUser.totalReferrals || 0) + 1 
+                });
+                
+                // También actualizar localStorage por compatibilidad
+                localStorage.setItem(`balance_${referrerUser.phone}`, newReferrerBalance.toString());
                 
                 // Bono para el nuevo usuario: 5 Bs
+                await updateUser(savedUser.id, { balance: 5 });
                 localStorage.setItem(`balance_${savedUser.phone}`, '5');
                 
-                console.log(`Bonos aplicados: Referente ${referrerUser.name} (+10 Bs), Nuevo usuario (+5 Bs)`);
+                console.log(`Bonos aplicados: Referente ${referrerUser.name} (+10 Bs → ${newReferrerBalance} Bs), Nuevo usuario (+5 Bs)`);
             } else {
-                // Usuario nuevo sin referido: balance inicial 0
+                // Usuario nuevo sin referido: balance inicial 0 (ya está en la BD)
                 localStorage.setItem(`balance_${savedUser.phone}`, '0');
             }
             
