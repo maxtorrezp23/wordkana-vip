@@ -1,81 +1,82 @@
-# 💰 Sistema de Escalado de Precios Aleatorio por Nivel VIP
+# 💰 Sistema de Escalado de Precios por Nivel VIP
 
 ## 📊 Descripción General
 
-Se ha implementado un sistema de escalado de precios **ALEATORIO** donde los productos aumentan su costo de forma variable a partir del **VIP 2**. Cada producto tiene un aumento único dentro de un rango específico por nivel.
+Se ha implementado un sistema de escalado de precios donde los productos aumentan su costo de forma **FIJA** a partir del **VIP 2**. Todos los productos tienen un incremento de **600%** (7x el precio base).
 
 ---
 
-## 🎲 Rangos de Variación Aleatoria por Nivel
+## � Multiplicadores por Nivel
 
-| Nivel VIP | Rango de Aumento | Ejemplo Mín (50 Bs) | Ejemplo Máx (50 Bs) |
-|-----------|------------------|---------------------|---------------------|
-| VIP 1     | Sin cambio       | 50.00 Bs           | 50.00 Bs            |
-| VIP 2     | +5% a +20%       | 52.50 Bs           | 60.00 Bs            |
-| VIP 3     | +10% a +30%      | 55.00 Bs           | 65.00 Bs            |
-| VIP 4     | +15% a +35%      | 57.50 Bs           | 67.50 Bs            |
-| VIP 5     | +20% a +40%      | 60.00 Bs           | 70.00 Bs            |
-| VIP 6     | +25% a +50%      | 62.50 Bs           | 75.00 Bs            |
-| VIP 7     | +30% a +60%      | 65.00 Bs           | 80.00 Bs            |
-| VIP 8     | +35% a +70%      | 67.50 Bs           | 85.00 Bs            |
-| VIP 9     | +40% a +80%      | 70.00 Bs           | 90.00 Bs            |
-| VIP 10    | +50% a +100%     | 75.00 Bs           | 100.00 Bs           |
+| Nivel VIP | Multiplicador | Ejemplo (50 Bs base) |
+|-----------|--------------|----------------------|
+| VIP 1     | 1.0x         | 50.00 Bs            |
+| VIP 2     | 7.0x         | 350.00 Bs           |
+| VIP 3     | 7.0x         | 350.00 Bs           |
+| VIP 4     | 7.0x         | 350.00 Bs           |
+| VIP 5     | 7.0x         | 350.00 Bs           |
+| VIP 6     | 7.0x         | 350.00 Bs           |
+| VIP 7     | 7.0x         | 350.00 Bs           |
+| VIP 8     | 7.0x         | 350.00 Bs           |
+| VIP 9     | 7.0x         | 350.00 Bs           |
+| VIP 10    | 7.0x         | 350.00 Bs           |
 
 ---
 
 ## 🎯 Características del Sistema
 
-### ✨ Variación Aleatoria Consistente
-- Cada producto tiene un **multiplicador único** calculado de forma pseudo-aleatoria
-- El multiplicador se basa en el **nombre del producto + nivel VIP**
-- **Mismo producto = mismo precio** (consistente entre sesiones)
-- Diferentes productos = diferentes aumentos dentro del rango
+### ✨ Incremento Fijo
+- Todos los productos a partir de VIP 2 tienen un incremento de **600%**
+- Precio final = Precio base × 7
+- **VIP 1 mantiene precios originales** (sin incremento)
 
 ### 🔒 Consistencia
+- Los precios son consistentes para todos los usuarios
 - Los precios NO cambian al recargar la página
-- Los precios son consistentes para todos los usuarios en el mismo nivel
-- Basado en un algoritmo determinístico (no verdaderamente aleatorio)
+- Fácil de calcular: solo multiplicar por 7
 
-### 🎨 Diversidad
-- Cada producto en un nivel tiene un precio diferente
-- Algunos productos suben poco (+5%), otros mucho (+100%)
-- Hace que cada nivel sea más interesante y variado
+### 🎨 Simplicidad
+- Sistema simple y predecible
+- Todos los productos del mismo nivel tienen el mismo multiplicador
+- Facilita la administración de precios
 
 ---
 
 ## 💡 Ejemplos Prácticos
 
-### Ejemplo 1: Tres productos en VIP 5 (rango +20% a +40%)
+### Ejemplo 1: Productos en VIP 1
 ```
-Producto A: "Smartphone Samsung"
-Seed: 1523 → Multiplicador: 1.28 → 50 Bs × 1.28 = 64.00 Bs (+28%)
-
-Producto B: "Laptop HP"
-Seed: 892 → Multiplicador: 1.35 → 50 Bs × 1.35 = 67.50 Bs (+35%)
-
-Producto C: "Auriculares JBL"
-Seed: 1647 → Multiplicador: 1.22 → 50 Bs × 1.22 = 61.00 Bs (+22%)
+Smartphone Samsung A15 (50 Bs) → 50 Bs (sin cambio)
+Laptop HP 15" (55 Bs) → 55 Bs (sin cambio)
+Auriculares JBL (25 Bs) → 25 Bs (sin cambio)
 ```
 
-### Ejemplo 2: Mismo producto en diferentes niveles
+### Ejemplo 2: Productos en VIP 2+
+```
+Smartphone Samsung A15 (50 Bs) → 350 Bs (7x, +600%)
+Laptop HP 15" (55 Bs) → 385 Bs (7x, +600%)
+Auriculares JBL (25 Bs) → 175 Bs (7x, +600%)
+```
+
+### Ejemplo 3: Mismo producto en diferentes niveles
 ```
 "Smartphone Samsung" (precio base: 50 Bs)
 
 VIP 1: 50.00 Bs (sin cambio)
-VIP 2: 55.32 Bs (+10.6%)
-VIP 3: 59.18 Bs (+18.4%)
-VIP 5: 64.00 Bs (+28%)
-VIP 10: 87.50 Bs (+75%)
+VIP 2: 350.00 Bs (+600%)
+VIP 3: 350.00 Bs (+600%)
+VIP 5: 350.00 Bs (+600%)
+VIP 10: 350.00 Bs (+600%)
 ```
 
-### Ejemplo 3: Con Precio Personalizado
+### Ejemplo 4: Con Precio Personalizado
 ```
 Producto: Smartphone Samsung
 Precio base: 50 Bs
 Nivel: VIP 5
-Precio aleatorio calculado: 64.00 Bs (+28%)
-Precio personalizado por admin: 40 Bs
-Precio final: 40.00 Bs ✅ (ignora el cálculo aleatorio)
+Precio calculado: 350.00 Bs (+600%)
+Precio personalizado por admin: 400 Bs
+Precio final: 400.00 Bs ✅ (ignora el cálculo automático)
 ```
 
 ---
@@ -86,17 +87,13 @@ Precio final: 40.00 Bs ✅ (ignora el cálculo aleatorio)
 
 ```javascript
 function getRandomPriceMultiplier(level, productName) {
-    if (level === 1) return 1.0;
-    
-    // Generar seed único basado en nombre del producto
-    let seed = 0;
-    for (let i = 0; i < productName.length; i++) {
-        seed += productName.charCodeAt(i);
+    if (level === 1) {
+        return 1.0; // VIP 1: sin cambios
     }
-    seed = (seed * level) % 1000;
     
-    // Definir rango según nivel
-    const ranges = {
+    // A partir de VIP 2: incremento fijo de 600% (7x el precio base)
+    return 7.0;
+}
         2: { min: 1.05, max: 1.20 },
         3: { min: 1.10, max: 1.30 },
         // ... más niveles

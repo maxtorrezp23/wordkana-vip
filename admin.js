@@ -424,35 +424,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('productsModal').style.display = 'none';
     };
 
-    // Función para generar un multiplicador aleatorio según el nivel VIP (igual que en tienda.js)
+    // Función para generar un multiplicador según el nivel VIP (igual que en tienda.js)
     function getRandomPriceMultiplier(level, productName) {
         if (level === 1) {
             return 1.0;
         }
         
-        let seed = 0;
-        for (let i = 0; i < productName.length; i++) {
-            seed += productName.charCodeAt(i);
-        }
-        seed = (seed * level) % 1000;
-        
-        const ranges = {
-            2: { min: 5.0, max: 7.0 },     // VIP 2: entre 5x y 7x (400% - 600%)
-            3: { min: 6.0, max: 8.5 },     // VIP 3: entre 6x y 8.5x (500% - 750%)
-            4: { min: 7.0, max: 10.0 },    // VIP 4: entre 7x y 10x (600% - 900%)
-            5: { min: 8.5, max: 12.0 },    // VIP 5: entre 8.5x y 12x (750% - 1100%)
-            6: { min: 10.0, max: 14.0 },   // VIP 6: entre 10x y 14x (900% - 1300%)
-            7: { min: 12.0, max: 16.0 },   // VIP 7: entre 12x y 16x (1100% - 1500%)
-            8: { min: 14.0, max: 19.0 },   // VIP 8: entre 14x y 19x (1300% - 1800%)
-            9: { min: 16.0, max: 22.0 },   // VIP 9: entre 16x y 22x (1500% - 2100%)
-            10: { min: 20.0, max: 25.0 }   // VIP 10: entre 20x y 25x (1900% - 2400%)
-        };
-        
-        const range = ranges[level] || ranges[2];
-        const random = (seed / 1000);
-        const multiplier = range.min + (random * (range.max - range.min));
-        
-        return multiplier;
+        // A partir de VIP 2: incremento fijo de 600% (7x el precio base)
+        return 7.0;
     }
 
     function loadUserProducts(phone, level) {
