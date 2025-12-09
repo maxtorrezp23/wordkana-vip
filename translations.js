@@ -725,11 +725,19 @@ function applyTranslations() {
 
 // Inicializar traducciones cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
+    // Forzar actualización de la bandera de Bolivia si el idioma es español
+    const selectedLang = getCurrentLanguage();
+    if (selectedLang === 'es') {
+        const currentFlag = document.getElementById('currentFlag');
+        if (currentFlag) {
+            currentFlag.textContent = '🇧🇴';
+        }
+    }
+    
     applyTranslations();
     
     // Actualizar el botón principal con el idioma actual
-    const currentLang = getCurrentLanguage();
-    updateLanguageButton(currentLang);
+    updateLanguageButton(selectedLang);
     
     // Toggle del dropdown
     const langToggle = document.getElementById('langToggle');
