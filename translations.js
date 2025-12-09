@@ -663,7 +663,7 @@ const translations = {
 
 // Mapa de banderas e idiomas
 const languageData = {
-    es: { flag: '🇪🇸', code: 'ES', name: 'Español' },
+    es: { flag: '��', code: 'ES', name: 'Español' },
     en: { flag: '🇺🇸', code: 'EN', name: 'English' },
     zh: { flag: '🇨🇳', code: '中文', name: '中文' },
     pt: { flag: '🇧🇷', code: 'PT', name: 'Português' },
