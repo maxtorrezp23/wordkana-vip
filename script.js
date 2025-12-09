@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Generar código de referido único para el nuevo usuario
             const myReferralCode = generateReferralCode(phone);
             
-            // Crear nuevo usuario
+            // Crear nuevo usuario con todos los campos necesarios
             const newUser = {
                 name: name,
                 phone: phone,
@@ -467,7 +467,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 referralCode: myReferralCode,
                 referredBy: referrerUser ? referrerUser.phone : null,
                 totalReferrals: 0,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                balance: 100,
+                earnings: 0,
+                level: 1,
+                purchasedProducts: {},
+                customPrices: {}
             };
             
             console.log('Creando usuario:', newUser);
